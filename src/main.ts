@@ -1,6 +1,14 @@
-// THEME: fonts (@fontsource packages). Neutral defaults: Inter + JetBrains Mono.
-import '@fontsource-variable/inter'
-import '@fontsource-variable/jetbrains-mono'
+// Primetime type: Barlow Condensed (the network graphics package), Barlow
+// (body) and Chivo Mono (clocks, stats, down & distance). Latin subsets only.
+import '@fontsource/barlow-condensed/latin-600.css'
+import '@fontsource/barlow-condensed/latin-700.css'
+import '@fontsource/barlow-condensed/latin-800.css'
+import '@fontsource/barlow-condensed/latin-700-italic.css'
+import '@fontsource/barlow-condensed/latin-800-italic.css'
+import '@fontsource/barlow/latin-400.css'
+import '@fontsource/barlow/latin-500.css'
+import '@fontsource/barlow/latin-600.css'
+import '@fontsource-variable/chivo-mono/wght.css'
 import './styles/base.css'
 import './ui/ui.css'
 

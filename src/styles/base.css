@@ -1,5 +1,7 @@
 /* ------------------------------------------------------------------
-   Hark concept starter — base tokens, layout and the shared HUD vocabulary.
+   Hark Primetime — base tokens, layout and the shared HUD vocabulary: a
+   network broadcast graphics package (lower thirds, score-bug labels,
+   slanted buttons, condensed italic headlines) over a floodlit night game.
 
    Two parts:
    1. STRUCTURE (keep): #gl / #track / #stages / .stage / #chrome / #loader,
@@ -17,26 +19,29 @@
    ------------------------------------------------------------------ */
 
 :root {
-  /* THEME tokens */
-  --bg: #0d0f12;
-  --ink: #0d0f12;
-  --paper: #f4f2ee;
-  --paper-2: #f4f2ee;
-  /* THEME: the concept's accent. A neutral placeholder — not the old signal green, which
-     is not a Hark brand color (the brand is the monochrome mark). */
-  --signal: #d8dde6;
-  --signal-deep: #5b6270;
+  /* Primetime tokens: night navy, chalk, first-down yellow, red-zone red */
+  --bg: #060a14;
+  --ink: #060a14;
+  --navy: #0d1b35;
+  --navy-2: #13254a;
+  --paper: #f3f4ee;
+  --paper-2: #f3f4ee;
+  /* the accent is the first-down line (never the old signal green) */
+  --signal: #ffd23f;
+  --signal-deep: #7a5a00;
+  --red: #ff4b3a;
 
   --fg: var(--paper);
-  --fg-muted: rgba(244, 242, 238, 0.78);
-  --fg-faint: rgba(244, 242, 238, 0.64);
-  --line: rgba(244, 242, 238, 0.16);
-  --line-strong: rgba(244, 242, 238, 0.38);
-  --panel: rgba(13, 15, 18, 0.72);
+  --fg-muted: rgba(243, 244, 238, 0.84);
+  --fg-faint: rgba(243, 244, 238, 0.68);
+  --line: rgba(243, 244, 238, 0.18);
+  --line-strong: rgba(243, 244, 238, 0.42);
+  --panel: rgba(8, 17, 38, 0.84);
+  --panel-2: rgba(8, 17, 38, 0.66);
 
-  --font-display: 'Inter Variable', system-ui, sans-serif;
-  --font-sans: 'Inter Variable', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --font-sans: 'Barlow', system-ui, sans-serif;
+  --font-mono: 'Chivo Mono Variable', ui-monospace, monospace;
 
   /* STRUCTURE: the persistent chrome owns these bands (+ notch insets) */
   --gutter: max(clamp(16px, 3.4vw, 48px), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
@@ -49,11 +54,11 @@
 /* example tone flip for light scenes: add .is-light to a stage */
 .is-light {
   --fg: var(--ink);
-  --fg-muted: rgba(13, 15, 18, 0.74);
-  --fg-faint: rgba(13, 15, 18, 0.64);
-  --line: rgba(13, 15, 18, 0.14);
-  --line-strong: rgba(13, 15, 18, 0.32);
-  --panel: rgba(244, 242, 238, 0.82);
+  --fg-muted: rgba(6, 10, 20, 0.78);
+  --fg-faint: rgba(6, 10, 20, 0.66);
+  --line: rgba(6, 10, 20, 0.14);
+  --line-strong: rgba(6, 10, 20, 0.34);
+  --panel: rgba(243, 244, 238, 0.9);
 }
 
 *,
@@ -206,23 +211,26 @@ a {
   outline-color: var(--paper-2);
 }
 
-/* ---------------- HUD vocabulary (THEME) ---------------- */
+/* ---------------- HUD vocabulary: the broadcast graphics package ---------------- */
 
 .hud-label {
   font-family: var(--font-mono);
   font-size: 11px;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-muted);
   line-height: 1.5;
 }
 
+/* a score-bug tag: a slanted yellow chip, then the words */
 .hud-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   font-family: var(--font-mono);
   font-size: 11.5px;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--fg);
@@ -230,36 +238,41 @@ a {
 }
 .hud-eyebrow::before {
   content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+  flex: none;
+  width: 16px;
+  height: 9px;
   background: var(--signal);
+  transform: skewX(-18deg);
 }
 
 .hud-title {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 0.92;
-  font-size: clamp(3rem, 8vw, 8rem);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  line-height: 0.86;
+  font-size: clamp(3.3rem, 9vw, 9.2rem);
   margin: 0;
   color: var(--fg);
   text-wrap: balance;
 }
 .hud-h2 {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 0.98;
-  font-size: clamp(2rem, 4.4vw, 4.2rem);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  line-height: 0.9;
+  font-size: clamp(2.2rem, 5vw, 4.9rem);
   margin: 0;
   color: var(--fg);
   text-wrap: balance;
 }
-/* <em> = the accent word */
+/* <em> = the accent word, in first-down yellow */
 .hud-title em,
 .hud-h2 em {
-  font-style: normal;
+  font-style: italic;
   color: var(--signal);
 }
 .is-light .hud-title em,
@@ -269,19 +282,20 @@ a {
 
 .hud-body {
   font-family: var(--font-sans);
+  font-weight: 500;
   font-size: clamp(15px, 1.15vw, 17px);
-  line-height: 1.55;
+  line-height: 1.5;
   color: var(--fg-muted);
-  max-width: 42ch;
+  max-width: 44ch;
   margin: 0;
 }
 
 .hud-quote {
   font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(1.4rem, 2.6vw, 2.4rem);
-  line-height: 1.18;
-  letter-spacing: -0.015em;
+  font-weight: 600;
+  font-size: clamp(1.45rem, 2.5vw, 2.35rem);
+  line-height: 1.1;
+  letter-spacing: 0;
   color: var(--fg);
   margin: 0;
   text-wrap: pretty;
@@ -298,57 +312,83 @@ a {
 .hud-tag {
   font-family: var(--font-mono);
   font-size: 10.5px;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg);
-  padding: 4px 9px;
+  padding: 4px 8px;
+  background: rgba(243, 244, 238, 0.06);
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: 1px;
 }
 
+/* slanted broadcast buttons: the parallelogram is a pseudo-element so the
+   focus ring stays a clean rectangle around the whole control */
 .hud-btn {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   text-decoration: none;
-  color: var(--bg);
-  background: var(--signal);
-  padding: 13px 20px;
+  color: var(--ink);
+  background: none;
+  padding: 11px 24px 10px;
   border: 0;
-  border-radius: 999px;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
+.hud-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--signal);
+  transform: skewX(-14deg);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+}
 .hud-btn:hover,
 .hud-btn:focus-visible {
-  transform: translateY(-2px);
+  transform: translateX(3px);
 }
 .hud-btn--ghost {
-  background: transparent;
   color: var(--fg);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+.hud-btn--ghost::before {
+  background: rgba(6, 12, 28, 0.55);
+  box-shadow: inset 0 0 0 1.5px var(--line-strong);
+}
+.hud-btn--ghost:hover::before,
+.hud-btn--ghost:focus-visible::before {
+  box-shadow: inset 0 0 0 1.5px var(--signal);
 }
 
+/* a lower third: navy plate, first-down yellow edge, a hairline on top */
 .hud-panel {
   position: relative;
-  padding: 20px 22px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  padding: 18px 22px 20px 24px;
+  background: linear-gradient(100deg, rgba(10, 22, 48, 0.92), rgba(8, 17, 38, 0.8));
+  border: 0;
+  border-left: 5px solid var(--signal);
+  box-shadow:
+    inset 0 1px 0 rgba(243, 244, 238, 0.14),
+    0 12px 32px rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .hud-rule {
-  height: 1px;
+  height: 2px;
+  width: 48px;
   border: 0;
-  background: var(--line);
-  margin: 14px 0;
+  background: var(--signal);
+  margin: 12px 0;
 }
 
 .hud-mono {
@@ -378,12 +418,13 @@ a {
 }
 .callout-dot {
   position: absolute;
-  left: -4px;
-  top: -4px;
-  width: 8px;
-  height: 8px;
+  left: -5px;
+  top: -5px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--signal);
+  box-shadow: 0 0 0 3px rgba(6, 10, 20, 0.6);
 }
 .callout-label {
   position: absolute;
@@ -412,8 +453,8 @@ a {
 }
 
 /* ---------------- word reveal (src/core/dom.ts rise/setRise) ----------------
-   THEME: restyle the motion (Orbit decoded, Resonance rose, Press stamped,
-   Town popped, Arcade blinked in). Neutral: a short rise + fade. */
+   Primetime: words WIPE IN like a graphics package — each word slides in from
+   the left, un-skewing as it lands, with a tight stagger. Exact at rest. */
 .rise .rise-w {
   display: inline-block;
   vertical-align: top;
@@ -427,18 +468,18 @@ a {
 .rise .rise-w > span {
   display: inline-block;
   opacity: 0;
-  transform: translate3d(0, 0.4em, 0);
+  transform: translate3d(-0.45em, 0, 0) skewX(-10deg);
   transition:
-    transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
-    opacity 0.35s ease;
-  transition-delay: calc(var(--i, 0) * 35ms);
+    transform 0.5s cubic-bezier(0.16, 0.9, 0.2, 1),
+    opacity 0.28s ease;
+  transition-delay: calc(var(--i, 0) * 45ms);
 }
 .rise.is-in .rise-w > span {
   opacity: 1;
   transform: none;
 }
 .rise:not(.is-in) .rise-w > span {
-  transition-duration: 0.25s, 0.2s;
+  transition-duration: 0.22s, 0.18s;
   transition-delay: 0s;
 }
 
@@ -478,7 +519,7 @@ a {
   color: var(--ink);
   background: var(--signal);
   padding: 12px 18px;
-  border-radius: 999px;
+  border-radius: 2px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   outline: 2px solid var(--signal);
   outline-offset: 3px;
@@ -554,7 +595,7 @@ a {
 .lowfx .hud-panel {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  background: rgba(13, 15, 18, 0.9);
+  background: linear-gradient(100deg, rgba(10, 22, 48, 0.96), rgba(8, 17, 38, 0.92));
 }
 
 /* the visitor's Motion switch (engine.motion = false) mirrors reduced motion */

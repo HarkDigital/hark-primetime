@@ -4,83 +4,172 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
+import { drawMark } from '../kit/type'
 
 /*
  * Post-processing: Render → Sanitize (NaN guard) → Bloom → Output → FINAL.
  *
- * THEME: the FINAL pass is where a concept gets its signature look and its
- * chapter-cut transition. Previous concepts replaced it with:
- *   Orbit      glitch tear + zoom blur + white-green flash
- *   Resonance  pressure-wave ripple + paper wash
- *   Press      ink densities → rotated halftone screens (riso)
- *   Town       tilt-shift blur + miniature saturation + cloud wipe
- *   Arcade     pixelate + palette snap + Bayer dither + CRT + iris wipe
+ * PRIMETIME's final pass is a network broadcast camera:
+ *   - a clean broadcast grade: navy-lifted blacks, a touch of saturation and
+ *     contrast, a light vignette, sensor grain, lens fringing at the edges
+ *   - a WHIP-PAN smear (params.glitch): horizontal motion blur a chapter can
+ *     punch on fast camera whips
+ *   - the chapter cut is a REPLAY STINGER: a navy band with yellow and white
+ *     speed stripes sweeps diagonally across the frame, the Hark mark rides
+ *     in its middle at the boundary, and the band sweeps out the far side.
+ *     Scrolling back plays it in reverse (the engine sets cutSide).
  *
- * This neutral version: soft radial wipe to `uCutColor` at cuts, gentle
- * chromatic aberration, vignette, grain, flash and fade. Keep the Post API
- * (params / resetParams / setSize / render / compileAsync / setFadeTone) and
- * the uTransition / uFade / uFlash / uGlitch uniforms — the engine drives them.
+ * Keep the Post API (params / resetParams / setSize / render / compileAsync
+ * / setFadeTone) and the uTransition / uFade / uFlash / uGlitch uniforms.
  */
+
+/** The final pass runs AFTER the sRGB output pass: its colours are display (sRGB) values. */
+const srgb = (c: THREE.ColorRepresentation) => new THREE.Color(c).convertLinearToSRGB()
+
+function markTexture() {
+  const c = document.createElement('canvas')
+  c.width = c.height = 512
+  const ctx = c.getContext('2d')!
+  drawMark(ctx, 16, 16, 480, '#ffffff', '#ffd23f')
+  const t = new THREE.CanvasTexture(c)
+  // sampled raw: the final pass works in display values
+  t.colorSpace = THREE.NoColorSpace
+  return t
+}
 
 const FinalShader = {
   uniforms: {
     tDiffuse: { value: null as THREE.Texture | null },
+    tMark: { value: null as THREE.Texture | null },
     uTime: { value: 0 },
     uResolution: { value: new THREE.Vector2(1, 1) },
     uDpr: { value: 1 },
     /** 0..1, peaks exactly at a chapter boundary (engine-driven) */
     uTransition: { value: 0 },
-    /** 0..1 wobble a chapter can add (THEME: glitch / heat shimmer / VHS …) */
+    /** -1 before the boundary (band sweeps in), +1 after (band sweeps out) */
+    uCutSide: { value: -1 },
+    /** 0..1 whip-pan smear */
     uGlitch: { value: 0 },
-    uAberration: { value: 0.0015 },
-    uGrain: { value: 0.03 },
-    uVignette: { value: 0.3 },
+    uAberration: { value: 0.0012 },
+    uGrain: { value: 0.022 },
+    uVignette: { value: 0.28 },
+    uGrade: { value: 1 },
     /** 0..1 wash to white */
     uFlash: { value: 0 },
     /** 0..1 fade to uFadeColor (reduced-motion cuts) */
     uFade: { value: 0 },
-    /** colour the cut wipes through (THEME) */
-    uCutColor: { value: new THREE.Color('#0d0f12') },
-    uFadeColor: { value: new THREE.Color('#0d0f12') },
+    uCutColor: { value: srgb('#0b1a36') },
+    uFadeColor: { value: srgb('#060a14') },
+    uAccent: { value: srgb('#ffd23f') },
   },
   vertexShader: /* glsl */ `
     varying vec2 vUv;
     void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
   `,
   fragmentShader: /* glsl */ `
-    uniform sampler2D tDiffuse;
-    uniform float uTime, uDpr, uTransition, uGlitch, uAberration, uGrain, uVignette, uFlash, uFade;
+    uniform sampler2D tDiffuse, tMark;
+    uniform float uTime, uDpr, uTransition, uCutSide, uGlitch, uAberration, uGrain, uVignette, uGrade, uFlash, uFade;
     uniform vec2 uResolution;
-    uniform vec3 uCutColor, uFadeColor;
+    uniform vec3 uCutColor, uFadeColor, uAccent;
     varying vec2 vUv;
 
     float hash(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 
-    void main() {
-      vec2 uv = vUv;
-      float g = clamp(uGlitch, 0.0, 1.0);
-      uv.x += g * 0.004 * sin(uv.y * 60.0 + uTime * 12.0);
-
-      vec2 c = uv - 0.5;
+    vec3 sampleScene(vec2 uv, vec2 c) {
       vec3 col;
       col.r = texture2D(tDiffuse, uv + c * uAberration).r;
       col.g = texture2D(tDiffuse, uv).g;
       col.b = texture2D(tDiffuse, uv - c * uAberration).b;
+      return col;
+    }
 
-      // THEME: the chapter-cut transition. Neutral: a soft radial wipe that
-      // closes toward the centre at the boundary (t = 1) and reopens after.
-      float t = clamp(uTransition, 0.0, 1.0);
-      if (t > 0.001) {
-        float aspect = uResolution.x / max(uResolution.y, 1.0);
-        float r = length(c * vec2(aspect, 1.0));
-        float reach = (1.0 - t) * 1.1;
-        float wipe = 1.0 - smoothstep(reach - 0.12, reach, r);
-        col = mix(uCutColor, col, wipe);
+    // a stripe between a and b along d, anti-aliased by px
+    float band(float d, float a, float b, float px) {
+      return smoothstep(a - px, a + px, d) * (1.0 - smoothstep(b - px, b + px, d));
+    }
+
+    void main() {
+      vec2 uv = vUv;
+      vec2 c = uv - 0.5;
+      float aspect = uResolution.x / max(uResolution.y, 1.0);
+      float px = 1.5 / max(uResolution.y, 1.0);
+
+      // whip-pan: horizontal motion blur
+      float g = clamp(uGlitch, 0.0, 1.0);
+      vec3 col;
+      if (g > 0.002) {
+        vec3 acc = vec3(0.0);
+        for (int i = 0; i < 9; i++) {
+          float o = (float(i) / 8.0 - 0.5) * g * 0.07;
+          acc += sampleScene(uv + vec2(o, 0.0), c);
+        }
+        col = acc / 9.0;
+      } else {
+        col = sampleScene(uv, c);
       }
 
+      // ---- the replay stinger ----
+      float t = clamp(uTransition, 0.0, 1.0);
+      if (t > 0.001) {
+        float phi = uCutSide < 0.0 ? 0.5 * t : 1.0 - 0.5 * t;
+        const float SLANT = 0.45;
+        // across-the-band coordinate (in screen heights), tilted like a /
+        float d = c.x * aspect + c.y * SLANT;
+        float E = aspect * 0.5 + SLANT * 0.5 + 0.36;
+        float e1 = clamp(phi * 2.0, 0.0, 1.0);
+        float e2 = clamp(phi * 2.0 - 1.0, 0.0, 1.0);
+        // ease the edges (fast through the middle of the frame)
+        e1 = e1 * e1 * (3.0 - 2.0 * e1);
+        e2 = e2 * e2 * (3.0 - 2.0 * e2);
+        float L = mix(-E, E, e1);
+        float T = mix(-E, E, e2);
+
+        // the scene smears ahead of the leading edge / behind the trailing one
+        float near = exp(-max(d - L, 0.0) * 9.0) * step(L, d) + exp(-max(T - d, 0.0) * 9.0) * step(d, T);
+        if (near > 0.02) {
+          vec3 acc = vec3(0.0);
+          for (int i = 0; i < 7; i++) {
+            float o = (float(i) / 6.0 - 0.5) * 0.08 * near;
+            acc += texture2D(tDiffuse, uv + vec2(o, 0.0)).rgb;
+          }
+          col = mix(col, acc / 7.0, near);
+        }
+
+        float inBand = band(d, T, L, px);
+        // band interior: navy with a light falloff and speed lines parallel to the edges
+        float lines = smoothstep(0.86, 0.98, fract((d - L * 0.6) * 5.0)) * 0.08;
+        float shade = 0.75 + 0.5 * (0.5 + c.y);
+        vec3 inner = uCutColor * shade + vec3(lines);
+        // diagonal sheen travelling with the band
+        inner += vec3(0.05, 0.07, 0.12) * exp(-abs(d - mix(T, L, 0.5)) * 3.0);
+        // the mark rides in the middle of the frame at the boundary
+        float ms = 0.36 + 0.06 * (phi - 0.5);
+        vec2 mu = vec2(c.x * aspect, c.y) / ms + 0.5;
+        if (mu.x > 0.0 && mu.x < 1.0 && mu.y > 0.0 && mu.y < 1.0) {
+          vec4 mk = texture2D(tMark, mu);
+          float show = smoothstep(0.2, 0.42, phi) * (1.0 - smoothstep(0.58, 0.8, phi));
+          inner = mix(inner, mk.rgb, mk.a * show);
+        }
+        col = mix(col, inner, inBand);
+
+        // speed stripes at both edges: yellow, white, thin yellow
+        float y1 = band(d, L, L + 0.045, px) + band(d, T - 0.045, T, px);
+        float w1 = band(d, L + 0.07, L + 0.086, px) + band(d, T - 0.086, T - 0.07, px);
+        float y2 = band(d, L + 0.115, L + 0.123, px) + band(d, T - 0.123, T - 0.115, px);
+        col = mix(col, uAccent, clamp(y1 + y2, 0.0, 1.0));
+        col = mix(col, vec3(0.97), clamp(w1, 0.0, 1.0));
+      }
+
+      // ---- broadcast grade ----
+      float luma = dot(col, vec3(0.2126, 0.7152, 0.0722));
+      vec3 graded = mix(vec3(luma), col, 1.08);
+      graded = mix(graded, graded * graded * (3.0 - 2.0 * graded), 0.12);
+      graded += vec3(0.004, 0.008, 0.02) * (1.0 - luma);
+      col = mix(col, graded, uGrade);
+
       col = mix(col, vec3(1.0), clamp(uFlash, 0.0, 1.0));
-      float v = 1.0 - smoothstep(0.35, 1.05, length(c * vec2(1.0, 0.9)) * 1.4);
-      col *= mix(1.0, 0.55 + 0.45 * v, uVignette);
+      float v = 1.0 - smoothstep(0.4, 1.1, length(c * vec2(1.0, 0.85)) * 1.35);
+      col *= mix(1.0, 0.6 + 0.4 * v, uVignette);
       col += (hash(vUv * uResolution + fract(uTime * 7.13) * 91.0) - 0.5) * uGrain;
       col = mix(col, uFadeColor, clamp(uFade, 0.0, 1.0));
       gl_FragColor = vec4(col, 1.0);
@@ -98,25 +187,27 @@ export type PostParams = {
   aberration: number
   grain: number
   vignette: number
-  /** wobble 0..1 */
+  /** whip-pan smear 0..1 */
   glitch: number
   /** white wash 0..1 */
   flash: number
   exposure: number
-  // THEME: add your look's params here (and damp them in render()).
+  /** broadcast grade amount 0..1 */
+  grade: number
 }
 
-/** Bloom only catches HDR (> ~1.0): emissive lamps, LEDs, speculars. */
+/** Bloom only catches HDR (> ~1.0): lamps, LEDs, speculars. */
 export const POST_DEFAULTS: PostParams = {
-  bloomStrength: 0.45,
-  bloomRadius: 0.4,
-  bloomThreshold: 1.0,
-  aberration: 0.0015,
-  grain: 0.03,
-  vignette: 0.3,
+  bloomStrength: 0.5,
+  bloomRadius: 0.32,
+  bloomThreshold: 0.95,
+  aberration: 0.0012,
+  grain: 0.022,
+  vignette: 0.28,
   glitch: 0,
   flash: 0,
   exposure: 1,
+  grade: 1,
 }
 
 /**
@@ -151,6 +242,8 @@ export class Post {
   params: PostParams = { ...POST_DEFAULTS }
   private current: PostParams = { ...POST_DEFAULTS }
   transition = 0
+  /** -1 before a boundary, +1 after (engine-driven): the stinger's direction */
+  cutSide = -1
   fade = 0
   private lastFlashAt = -1e9
   private flashLive = false
@@ -171,20 +264,20 @@ export class Post {
     this.composer = new EffectComposer(renderer, rt)
     this.composer.addPass(new RenderPass(scene, camera))
     this.composer.addPass(new ShaderPass(SanitizeShader))
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.45, 0.4, 1.0)
+    this.bloom = new UnrealBloomPass(new THREE.Vector2(size.x / 2, size.y / 2), 0.55, 0.45, 0.95)
     this.composer.addPass(this.bloom)
     this.composer.addPass(new OutputPass())
     this.final = new ShaderPass(FinalShader)
+    this.final.uniforms.tMark.value = markTexture()
     this.composer.addPass(this.final)
   }
 
-  /** THEME: colour the cut and reduced-motion fade pass through. */
+  /** Colour the stinger band and the reduced-motion fade. */
   setCutColor(color: THREE.ColorRepresentation) {
-    ;(this.final.uniforms.uCutColor.value as THREE.Color).set(color)
-    ;(this.final.uniforms.uFadeColor.value as THREE.Color).set(color)
+    ;(this.final.uniforms.uCutColor.value as THREE.Color).copy(srgb(color))
   }
 
-  /** Engine hook (kept for compatibility; themes may tint the fade by scene tone). */
+  /** Engine hook (kept for compatibility). */
   setFadeTone(_tone: number) {}
 
   resetParams() {
@@ -240,14 +333,17 @@ export class Post {
     this.bloom.strength = c.bloomStrength
     this.bloom.radius = c.bloomRadius
     this.bloom.threshold = c.bloomThreshold
+    this.bloom.enabled = c.bloomStrength > 0.01
     this.renderer.toneMappingExposure = c.exposure
     const u = this.final.uniforms
     u.uTime.value = time
     u.uTransition.value = this.transition
+    u.uCutSide.value = this.cutSide
     u.uGlitch.value = c.glitch
     u.uAberration.value = c.aberration
     u.uGrain.value = c.grain
     u.uVignette.value = c.vignette
+    u.uGrade.value = c.grade
     u.uFlash.value = c.flash
     u.uFade.value = this.fade
     this.composer.render(dt)

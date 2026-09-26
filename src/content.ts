@@ -377,13 +377,12 @@ export const PROCESS = [
 
 /**
  * HUD microcopy in Hark's own "hark means listen" voice — deliberately not
- * borrowed from igloo.inc.
+ * borrowed from igloo.inc. Primetime: a night game, called live.
  */
-/** THEME: give every concept its own microcopy (don't reuse another concept's). */
 export const MICROCOPY = {
-  signalEyebrow: 'Hark Digital Design',
-  scrollHint: 'Scroll to begin',
-  audio: 'Sound',
+  signalEyebrow: 'Hark Digital Design · Live under the lights',
+  scrollHint: 'Scroll for kickoff',
+  audio: 'Crowd',
   audioOn: 'On',
   audioOff: 'Off',
 }

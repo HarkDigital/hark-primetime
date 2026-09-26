@@ -115,6 +115,12 @@ export class Engine {
   private suppressFocusLand = false
   private tmpRight = new THREE.Vector3()
   private tmpUp = new THREE.Vector3()
+  /** ?cam=px,py,pz,tx,ty,tz[,fov] — a fixed debug camera for scouting shots */
+  private debugCam: number[] | null = (() => {
+    const v = new URLSearchParams(location.search).get('cam')
+    const n = v ? v.split(',').map(Number) : null
+    return n && n.length >= 6 && n.every(Number.isFinite) ? n : null
+  })()
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -138,7 +144,9 @@ export class Engine {
     //   cinematic ones, NoToneMapping suits stylised post passes (palette
     //   snaps, ink densities). Shadows cost real GPU time — enable only if
     //   the look needs them (then keep the shadow frustum tight).
-    this.renderer.setClearColor(0x0d0f12, 1)
+    // Primetime: Neutral keeps the screenshots, AR graphics and paint true to
+    // colour below ~0.8 and rolls the floodlights off softly.
+    this.renderer.setClearColor(0x05080f, 1)
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     this.renderer.toneMapping = THREE.NeutralToneMapping
     this.renderer.shadowMap.enabled = false
@@ -147,7 +155,7 @@ export class Engine {
     this.renderer.info.autoReset = false
     this.renderer.debug.checkShaderErrors = !import.meta.env.PROD
 
-    this.world = new World(this.scene, this.mobile)
+    this.world = new World(this.scene, this.mobile, this.renderer)
     this.scene.add(this.world.object)
     this.assets = new Assets(this.renderer)
     // MSAA only where it pays: 1x desktop screens. Retina is already supersampled,
@@ -693,7 +701,16 @@ export class Engine {
 
     // glitch ramps up approaching any internal cut and back down after it
     let d = Infinity
-    for (let i = 1; i < this.slots.length; i++) d = Math.min(d, Math.abs(scrollVh - this.slots[i].start))
+    let side = 1
+    for (let i = 1; i < this.slots.length; i++) {
+      const sd = scrollVh - this.slots[i].start
+      if (Math.abs(sd) < d) {
+        d = Math.abs(sd)
+        side = sd < 0 ? -1 : 1
+      }
+    }
+    // which side of the boundary we're on (the stinger wipes in before, out after)
+    if (this.jump) side = this.jump.swapped ? 1 : -1
     const tr = clamp(1 - d / CUT_WINDOW)
     const cut = Math.max(tr * tr * (3 - 2 * tr), fx)
     // cut budget (WCAG 2.3.1): while boundaries come fast (a quick scroll or
@@ -719,6 +736,7 @@ export class Engine {
       this.post.transition = cutOut
       this.post.fade = 0
     }
+    this.post.cutSide = side
 
     if (index !== this.state.index || !slot.chapter.group.visible) {
       const prev = this.slots[this.state.index]
@@ -763,6 +781,14 @@ export class Engine {
     } catch (err) {
       if (!slot.failed) console.error(`[hark] chapter "${slot.def.id}" crashed in update`, err)
       slot.failed = true
+    }
+    if (this.debugCam) {
+      const c = this.debugCam
+      this.pose.position.set(c[0], c[1], c[2])
+      this.pose.target.set(c[3], c[4], c[5])
+      if (c[6]) this.pose.fov = c[6]
+      this.pose.parallax = 0
+      this.pose.roll = 0
     }
     if (this.reducedMotion || !this.motion) {
       this.post.params.flash = Math.min(this.post.params.flash, 0.08)

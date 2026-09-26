@@ -6,16 +6,15 @@ import type { ChapterDef } from '../core/types'
  * copy — keep it clear of the ~6% cut window at each end). Each chapter lives
  * in src/chapters/<id>/ and default-exports a factory returning a Chapter.
  *
- * THEME: rename the labels to fit the concept (Orbit "Signal/Orbit/…",
- * Press "Proof/Paste-up/…", Arcade "Title Screen/Arcade Hall/…"). The ids are
- * shared with src/core/srContent.ts and the chrome's business names.
+ * Primetime labels are the broadcast's segments (Kickoff → Touchdown). The
+ * ids are shared with src/core/srContent.ts and the chrome's business names.
  */
 export const CHAPTERS: ChapterDef[] = [
-  { id: 'hero', label: 'Intro', length: 2.6, landing: 0, intro: 0.8, load: () => import('./hero/index') },
-  { id: 'work', label: 'Work', length: 3.8, landing: 0.12, intro: 0.06, load: () => import('./work/index') },
-  { id: 'services', label: 'Services', length: 3.8, landing: 0.08, intro: 0.06, load: () => import('./services/index') },
-  { id: 'voices', label: 'Voices', length: 3.0, landing: 0.08, intro: 0.06, load: () => import('./voices/index') },
-  { id: 'shield', label: 'Security', length: 1.7, landing: 0.45, intro: 0.45, load: () => import('./shield/index') },
-  { id: 'process', label: 'Process', length: 2.2, landing: 0.17, intro: 0.12, load: () => import('./process/index') },
-  { id: 'contact', label: 'Contact', length: 1.5, landing: 0.3, intro: 0.3, load: () => import('./contact/index') },
+  { id: 'hero', label: 'Kickoff', length: 2.6, landing: 0, intro: 0.8, load: () => import('./hero/index') },
+  { id: 'work', label: 'Highlights', length: 3.8, landing: 0.12, intro: 0.06, load: () => import('./work/index') },
+  { id: 'services', label: 'Starting Eleven', length: 3.8, landing: 0.08, intro: 0.06, load: () => import('./services/index') },
+  { id: 'voices', label: 'The Crowd', length: 3.0, landing: 0.08, intro: 0.06, load: () => import('./voices/index') },
+  { id: 'shield', label: 'Goal-Line Stand', length: 1.7, landing: 0.45, intro: 0.45, load: () => import('./shield/index') },
+  { id: 'process', label: 'The Drive', length: 2.2, landing: 0.17, intro: 0.12, load: () => import('./process/index') },
+  { id: 'contact', label: 'Touchdown', length: 1.5, landing: 0.3, intro: 0.3, load: () => import('./contact/index') },
 ]

@@ -39,7 +39,7 @@ export default function create(): Chapter {
       reveal(copy, smoothstep(0.35, 0.42, local) * (1 - smoothstep(0.94, 0.97, local)))
       setRise(title, local > 0.36 && local < 0.95)
       reveal(calm, smoothstep(0.7, 0.76, local) * (1 - smoothstep(0.94, 0.97, local)), 0)
-      ctx.world.params.bottom = threat > 0.5 ? '#3a1d24' : '#2a2f3a'
+      ctx.world.params.tint = threat > 0.5 ? '#ff9a8a' : '#ffffff'
     },
     camera(_local, frame, out) {
       framedCamera(out, frame)
