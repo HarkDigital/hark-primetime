@@ -1,0 +1,198 @@
+/* SERVICES — "Starting Eleven": the virtual-playbook lower third. */
+
+.stage-services .sv-intro {
+  position: absolute;
+  left: var(--gutter);
+  top: var(--safe-top);
+  max-width: min(640px, calc(100vw - 2 * var(--gutter)));
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+}
+.stage-services .sv-eyebrow {
+  padding: 6px 10px 6px 8px;
+  background: rgba(8, 17, 38, 0.82);
+  box-shadow: inset 0 1px 0 rgba(243, 244, 238, 0.12);
+}
+.stage-services .sv-h2 {
+  font-size: clamp(2.7rem, 6.2vw, 6rem);
+  line-height: 0.88;
+  text-shadow:
+    0 2px 2px rgba(3, 7, 16, 0.5),
+    0 4px 30px rgba(3, 7, 16, 0.6);
+}
+
+/* the lower third */
+.stage-services .sv-card {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--safe-bottom);
+  width: min(468px, calc(100vw - 2 * var(--gutter)));
+  padding: 16px 22px 20px 22px;
+}
+.stage-services .sv-inner {
+  display: grid;
+  gap: 10px;
+}
+.stage-services .sv-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.stage-services .sv-no {
+  flex: none;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 52px;
+  line-height: 0.8;
+  color: var(--signal);
+  letter-spacing: -0.01em;
+  min-width: 1.15em;
+}
+.stage-services .sv-meta {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.stage-services .sv-pos {
+  margin: 0;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stage-services .sv-pos b {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 6px 0;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--paper);
+  transform: skewX(-12deg);
+}
+.stage-services .sv-pips {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stage-services .sv-pips li {
+  width: 16px;
+  height: 5px;
+  background: rgba(243, 244, 238, 0.2);
+  transform: skewX(-18deg);
+}
+.stage-services .sv-pips li.is-done {
+  background: rgba(243, 244, 238, 0.62);
+}
+.stage-services .sv-pips li.is-on {
+  background: var(--signal);
+}
+.stage-services .sv-title {
+  margin: 2px 0 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: clamp(1.9rem, 2.7vw, 2.6rem);
+  line-height: 0.92;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.stage-services .sv-blurb {
+  max-width: none;
+}
+
+/* portrait / narrow: the card spans the bottom, the intro gets a plate */
+@media (max-width: 760px), (max-aspect-ratio: 1/1) {
+  .stage-services .sv-card {
+    right: var(--gutter);
+    width: auto;
+    max-width: 560px;
+  }
+}
+@media (max-width: 520px) {
+  .stage-services .sv-card {
+    padding: 13px 16px 15px 18px;
+  }
+  .stage-services .sv-inner {
+    gap: 8px;
+  }
+  .stage-services .sv-head {
+    padding-bottom: 8px;
+    gap: 12px;
+  }
+  .stage-services .sv-no {
+    font-size: 42px;
+  }
+  .stage-services .sv-pips li {
+    width: 12px;
+  }
+  .stage-services .sv-title {
+    font-size: 1.75rem;
+  }
+  .stage-services .sv-blurb {
+    font-size: 14.5px;
+    line-height: 1.42;
+  }
+  .stage-services .sv-h2 {
+    font-size: clamp(2.4rem, 11vw, 3.4rem);
+  }
+}
+@media (max-height: 700px) and (max-width: 520px) {
+  .stage-services .sv-tags .hud-tag {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+  .stage-services .sv-blurb {
+    font-size: 14px;
+    line-height: 1.38;
+  }
+}
+/* short landscape (phones on their side): a compact lower third that fits
+   between the chrome bands */
+@media (max-height: 520px) and (min-aspect-ratio: 1/1) {
+  .stage-services .sv-card {
+    right: auto;
+    width: min(430px, 54vw);
+    padding: 9px 14px 11px 16px;
+  }
+  .stage-services .sv-inner {
+    gap: 5px;
+  }
+  .stage-services .sv-head {
+    gap: 10px;
+    padding-bottom: 5px;
+  }
+  .stage-services .sv-no {
+    font-size: 30px;
+  }
+  .stage-services .sv-meta {
+    gap: 4px;
+  }
+  .stage-services .sv-pips li {
+    width: 10px;
+    height: 4px;
+  }
+  .stage-services .sv-title {
+    font-size: 1.3rem;
+  }
+  .stage-services .sv-blurb {
+    font-size: 12.5px;
+    line-height: 1.32;
+  }
+  .stage-services .sv-tags {
+    gap: 4px;
+  }
+  .stage-services .sv-tags .hud-tag {
+    padding: 2px 5px;
+    font-size: 9.5px;
+  }
+  .stage-services .sv-h2 {
+    font-size: clamp(2rem, 5.4vw, 3rem);
+  }
+}

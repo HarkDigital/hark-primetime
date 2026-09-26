@@ -37,9 +37,10 @@ function parseMark() {
 export const MARK_PATHS = parseMark()
 
 /**
- * The real wordmark, "Hark.Digital" (BRAND.short): the dot is a tiny signal
- * green LED. The period stays in the markup (clipped) so copy/paste and
- * find-in-page still read "Hark.Digital". Styled by the .wm rules in ui.css.
+ * The real wordmark, "Hark.Digital" (BRAND.short): the dot is a tiny slanted
+ * first-down-yellow chip. The period stays in the markup (clipped) so
+ * copy/paste and find-in-page still read "Hark.Digital". Styled by the .wm
+ * rules in ui.css.
  */
 export const WORDMARK = `<span class="wm"><span class="wm-a">Hark</span><span class="wm-dot">.</span><span class="wm-b">Digital</span></span>`
 
@@ -48,7 +49,8 @@ export const CONCEPT_TAG = `<span class="wm-tag"><span class="wm-tag-k">Concept<
 
 /**
  * Inline SVG markup for the mark. Loops fill with currentColor; the diamond
- * gets its own class so CSS can light it in signal green.
+ * gets its own class so CSS can light it (first-down yellow, like the
+ * stinger's mark) or keep it ink on the yellow network-bug tile.
  */
 export function markSvg(className = '', { title }: { title?: string } = {}) {
   const a11y = title ? `role="img" aria-label="${title}"` : 'aria-hidden="true" focusable="false"'

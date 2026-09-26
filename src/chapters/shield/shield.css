@@ -1,0 +1,223 @@
+/* ------------------------------------------------------------------
+   SHIELD — Goal-Line Stand. Broadcast package over the red zone:
+   a RED ZONE bug (threat), the headline block (left / top), and a
+   lower third with the 24/7 stat + the emergency CTA.
+   Every selector is scoped under .stage-shield.
+   ------------------------------------------------------------------ */
+
+/* legibility scrim behind the copy (left on landscape, top/bottom on portrait) */
+.stage-shield .sh-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(4, 8, 19, 0.84) 0%,
+    rgba(4, 8, 19, 0.7) 30%,
+    rgba(4, 8, 19, 0.24) 47%,
+    rgba(4, 8, 19, 0) 60%
+  );
+}
+
+/* the lower third brings its own plate: only a soft corner shade behind it */
+.stage-shield .sh-scrim--calm {
+  background: radial-gradient(120% 90% at 0% 100%, rgba(4, 8, 19, 0.6) 0%, rgba(4, 8, 19, 0.25) 40%, rgba(4, 8, 19, 0) 65%);
+}
+
+/* ---- the RED ZONE bug (0.06–0.33) ---- */
+.stage-shield .sh-bug {
+  position: absolute;
+  left: var(--gutter);
+  top: calc(var(--safe-top) + 4px);
+  display: flex;
+  align-items: stretch;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.35));
+}
+.stage-shield .sh-bug-tag {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px 7px 16px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.stage-shield .sh-bug-tag::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--red);
+  transform: skewX(-14deg);
+}
+.stage-shield .sh-bug-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.stage-shield .sh-bug.is-live .sh-bug-dot {
+  /* a slow alarm (0.8 Hz), five beats, ends solid; base.css cancels it under reduced motion */
+  animation: sh-alarm 1.25s ease-in-out 0.2s 5 both;
+}
+@keyframes sh-alarm {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+.stage-shield .sh-bug-down {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  padding: 0 16px 0 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: rgba(8, 17, 38, 0.92);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+/* ---- headline block (0.37–0.68; the 0.45 landing) ---- */
+.stage-shield .sh-copy {
+  position: absolute;
+  left: var(--gutter);
+  top: var(--safe-top);
+  bottom: var(--safe-bottom);
+  width: min(560px, 44vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+}
+.stage-shield .sh-title {
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.45);
+}
+/* small text over the crowd: a tight dark halo keeps it ≥ 4.5:1 over bright seats */
+.stage-shield .sh-copy .hud-eyebrow {
+  text-shadow:
+    0 0 6px rgba(4, 8, 19, 0.95),
+    0 1px 2px rgba(4, 8, 19, 0.9);
+}
+.stage-shield .sh-body {
+  max-width: 470px;
+  padding: 16px 20px 17px 20px;
+}
+.stage-shield .sh-body .hud-body {
+  color: var(--fg);
+}
+
+/* ---- the lower third: 24/7 + label + CTA (0.71–0.95) ---- */
+.stage-shield .sh-calm {
+  position: absolute;
+  left: var(--gutter);
+  bottom: calc(var(--safe-bottom) + 6px);
+  width: min(440px, calc(100vw - 2 * var(--gutter)));
+  display: grid;
+  gap: 10px;
+  padding: 20px 24px 24px 26px;
+}
+.stage-shield .sh-calm-label {
+  color: var(--signal);
+  font-weight: 600;
+}
+.stage-shield .sh-247 {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-style: italic;
+  font-size: clamp(4.4rem, 8.4vw, 7.6rem);
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.stage-shield .sh-calm-body {
+  color: var(--fg);
+  max-width: 36ch;
+}
+.stage-shield .sh-cta {
+  justify-self: start;
+  margin-top: 8px;
+}
+
+/* ---- portrait: copy on top, the goal line in the middle, the 24/7 panel at the bottom ---- */
+@media (max-aspect-ratio: 20/21) {
+  .stage-shield .sh-scrim {
+    background: linear-gradient(180deg, rgba(4, 8, 19, 0.84) 0%, rgba(4, 8, 19, 0.7) 30%, rgba(4, 8, 19, 0.2) 48%, rgba(4, 8, 19, 0) 58%);
+  }
+  .stage-shield .sh-scrim--calm {
+    background: linear-gradient(0deg, rgba(4, 8, 19, 0.7) 0%, rgba(4, 8, 19, 0.35) 30%, rgba(4, 8, 19, 0) 48%);
+  }
+  .stage-shield .sh-copy {
+    right: var(--gutter);
+    bottom: auto;
+    width: auto;
+    justify-content: flex-start;
+    gap: 14px;
+    padding-top: 6px;
+  }
+  .stage-shield .sh-body {
+    max-width: 560px;
+  }
+  .stage-shield .sh-calm {
+    right: var(--gutter);
+    width: auto;
+    max-width: 560px;
+  }
+}
+
+@media (max-aspect-ratio: 20/21) and (max-width: 520px) {
+  .stage-shield .sh-title {
+    font-size: clamp(2.9rem, 14vw, 3.6rem);
+  }
+  .stage-shield .sh-body {
+    padding: 13px 16px 14px 16px;
+  }
+  .stage-shield .sh-body .hud-body,
+  .stage-shield .sh-calm-body {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  .stage-shield .sh-247 {
+    font-size: 4.2rem;
+  }
+  .stage-shield .sh-calm {
+    padding: 16px 18px 18px 20px;
+    gap: 8px;
+  }
+  .stage-shield .sh-bug-down {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 0 12px 0 14px;
+  }
+}
+
+/* short landscape (e.g. 1280×720): tighten the block so it fits the band */
+@media (min-aspect-ratio: 20/21) and (max-height: 760px) {
+  .stage-shield .sh-title {
+    font-size: clamp(3.3rem, 8vw, 7.4rem);
+  }
+  .stage-shield .sh-copy {
+    gap: 14px;
+  }
+  .stage-shield .sh-247 {
+    font-size: clamp(3.8rem, 7vw, 6rem);
+  }
+  .stage-shield .sh-calm {
+    gap: 8px;
+    padding: 16px 22px 20px 24px;
+  }
+}

@@ -58,14 +58,18 @@ export const isPortrait = (frame: Frame) => frame.height > frame.width * 1.05
  * lands `amount` of the half-width right of centre on landscape screens.
  * Portrait: no shift, but pulls back by `portraitBack` (e.g. 1.3).
  */
+const _dir = new THREE.Vector3()
+const _right = new THREE.Vector3()
+const _up = new THREE.Vector3(0, 1, 0)
+
 export function frameRight(out: CameraPose, frame: Frame, amount = 0.28, portraitBack = 1.3) {
-  const dir = new THREE.Vector3().subVectors(out.target, out.position)
+  const dir = _dir.subVectors(out.target, out.position)
   const dist = dir.length()
   if (isPortrait(frame)) {
     out.position.copy(out.target).addScaledVector(dir.normalize(), -dist * portraitBack)
     return out
   }
-  const right = new THREE.Vector3().crossVectors(dir.normalize(), new THREE.Vector3(0, 1, 0)).normalize()
+  const right = _right.crossVectors(dir.normalize(), _up).normalize()
   const halfW = Math.tan(THREE.MathUtils.degToRad(out.fov) / 2) * dist * (frame.width / frame.height)
   // moving camera AND target left puts the subject right of centre
   const shift = -amount * halfW

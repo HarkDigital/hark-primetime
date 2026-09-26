@@ -1,0 +1,211 @@
+/* HIGHLIGHTS (work): the intro headline, the replay lower third, the nine-more list.
+   Everything scoped under .stage-work. */
+
+/* invisible probe the chapter measures for the chrome bands (camera framing) */
+.stage-work .wk-probe {
+  position: absolute;
+  top: var(--safe-top);
+  bottom: var(--safe-bottom);
+  left: var(--gutter);
+  right: var(--gutter);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ---- intro ---- */
+.stage-work .wk-intro {
+  position: absolute;
+  left: var(--gutter);
+  top: calc(var(--safe-top) + 2vh);
+  width: min(600px, 40vw);
+  display: grid;
+  gap: 18px;
+}
+.stage-work .wk-title {
+  font-size: clamp(3.2rem, 7.2vw, 7.6rem);
+  line-height: 0.84;
+  text-shadow: 0 2px 22px rgba(4, 8, 20, 0.55);
+}
+
+/* ---- the replay lower third ---- */
+.stage-work .wk-card {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--safe-bottom);
+  width: min(470px, calc(100vw - 2 * var(--gutter)));
+  display: grid;
+  gap: 10px;
+  padding-top: 20px;
+}
+/* the REPLAY bug riding on top of the plate */
+.stage-work .wk-bug {
+  position: absolute;
+  left: -5px;
+  top: -24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  padding: 0 14px 0 12px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--signal);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+.stage-work .wk-bug-play {
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--ink);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+/* replay scrubber along the plate's top edge */
+.stage-work .wk-scrub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: rgba(243, 244, 238, 0.14);
+}
+.stage-work .wk-scrub > i {
+  display: block;
+  height: 100%;
+  background: var(--signal);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+.stage-work .wk-meta {
+  margin: 0;
+  color: var(--fg);
+}
+.stage-work .wk-name {
+  font-size: clamp(2rem, 3.4vw, 3.3rem);
+  line-height: 0.9;
+}
+.stage-work .wk-blurb {
+  max-width: 40ch;
+}
+.stage-work .wk-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 4px;
+}
+.stage-work .wk-visit {
+  margin-left: auto;
+  margin-right: 6px;
+  font-size: 16px;
+  padding: 9px 20px 8px;
+}
+
+/* ---- nine more, all live ---- */
+.stage-work .wk-more {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--safe-bottom);
+  width: min(560px, calc(100vw - 2 * var(--gutter)));
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+.stage-work .wk-list {
+  width: 100%;
+  margin: 2px 0 4px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px 20px;
+}
+.stage-work .wk-list li {
+  display: grid;
+  gap: 2px;
+  padding-left: 10px;
+  border-left: 2px solid var(--line-strong);
+}
+.stage-work .wk-list a {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--fg);
+  text-decoration: none;
+}
+.stage-work .wk-list a:hover,
+.stage-work .wk-list a:focus-visible {
+  color: var(--signal);
+}
+.stage-work .wk-list span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+/* narrower landscape (tablets): slimmer plates so the board keeps the room */
+@media (max-width: 1100px) and (min-aspect-ratio: 20/21) {
+  .stage-work .wk-card {
+    width: 410px;
+  }
+  .stage-work .wk-more {
+    width: 470px;
+  }
+}
+
+/* portrait: headline on top, the board in the middle band, the plate at the bottom */
+@media (max-aspect-ratio: 20/21) {
+  .stage-work .wk-intro {
+    top: calc(var(--safe-top) + 1vh);
+    width: auto;
+    right: var(--gutter);
+    gap: 12px;
+  }
+  .stage-work .wk-title {
+    font-size: clamp(2.9rem, 12.5vw, 6.4rem);
+  }
+  .stage-work .wk-card,
+  .stage-work .wk-more {
+    width: min(560px, calc(100vw - 2 * var(--gutter)));
+  }
+}
+
+/* phones */
+@media (max-width: 560px) {
+  .stage-work .wk-card {
+    gap: 7px;
+    padding: 18px 16px 16px 18px;
+  }
+  .stage-work .wk-name {
+    font-size: clamp(1.7rem, 8vw, 2.2rem);
+  }
+  .stage-work .wk-blurb {
+    font-size: 14px;
+    line-height: 1.42;
+  }
+  .stage-work .wk-visit {
+    font-size: 15px;
+    padding: 8px 16px 7px;
+  }
+  .stage-work .wk-more {
+    gap: 9px;
+    padding: 16px 16px 16px 18px;
+  }
+  .stage-work .wk-list {
+    gap: 7px 12px;
+  }
+  .stage-work .wk-list a {
+    font-size: 13.5px;
+  }
+  .stage-work .wk-list span {
+    display: none;
+  }
+}

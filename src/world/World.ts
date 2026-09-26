@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import type { Frame } from '../core/types'
 import { buildTurf } from './turf'
-import { buildBowl } from './bowl'
+import { buildBowl, ringLength, TIERS } from './bowl'
 import { buildLights } from './lights'
 import { buildBoard } from './board'
 import { buildSky } from './sky'
@@ -207,7 +207,9 @@ export class World {
 
     const ru = this.bowl.ribbonUniforms
     ru.map.value = p.ribbon ?? this.defaultRibbon
-    ru.uRepeat.value = p.ribbonRepeat
+    // a whole number of repeats around the bowl, so the loop has no seam
+    const ringLen = ringLength(TIERS.ribbon.d)
+    ru.uRepeat.value = ringLen / Math.max(1, Math.round(ringLen / p.ribbonRepeat))
     ru.uScroll.value = p.ribbonScroll ?? frame.time * 0.012
     ru.uLevel.value = c.ribbonLevel * (0.3 + 0.7 * U.uLights.value)
 

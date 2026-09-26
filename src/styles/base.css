@@ -133,6 +133,7 @@ a {
 }
 #track:focus {
   outline: none;
+  box-shadow: none;
 }
 #track:focus-within {
   z-index: 30;
@@ -202,13 +203,12 @@ a {
   border: 0;
 }
 
+/* two-tone focus ring: a first-down-yellow ring between two ink halos, so it
+   holds ≥ 3:1 over the night sky, the white-hot light towers and the turf */
 :focus-visible {
-  outline: 3px solid var(--ink);
-  outline-offset: 3px;
-}
-
-.is-dark :focus-visible {
-  outline-color: var(--paper-2);
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 7px rgba(6, 10, 20, 0.94);
 }
 
 /* ---------------- HUD vocabulary: the broadcast graphics package ---------------- */
@@ -499,34 +499,43 @@ a {
 .sr-copy :is(a, button) {
   pointer-events: auto;
 }
+/* focused copy-layer links / buttons: a broadcast LOWER-THIRD CHIP at the top
+   of the frame (under the chrome band, where no chapter copy sits): ink on
+   first-down yellow with a navy tab, ringed ink + yellow over any scene */
 .sr-copy :is(a, button):focus {
   position: fixed;
   left: 50%;
-  /* THEME: put the pill where the chapters' own copy isn't (top by default) */
   top: calc(var(--safe-top) + 8px);
   transform: translateX(-50%);
   z-index: 40;
   width: max-content;
-  max-width: min(560px, calc(100vw - 2 * var(--gutter)));
+  max-width: min(560px, calc(100vw - 2 * var(--gutter) - 16px));
   white-space: normal;
-  text-align: center;
-  line-height: 1.35;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--ink);
   background: var(--signal);
-  padding: 12px 18px;
-  border-radius: 2px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  outline: 2px solid var(--signal);
+  padding: 11px 18px 10px 14px;
+  border: 0;
+  border-left: 8px solid var(--navy);
+  border-radius: 0;
+  box-shadow:
+    0 0 0 3px var(--ink),
+    0 12px 28px rgba(0, 0, 0, 0.45);
+  outline: 3px solid var(--signal);
   outline-offset: 3px;
 }
 .sr-copy :is(a, button):focus .sr-note {
   display: none;
 }
+/* a focused section heading: a chalk lower third with a yellow tab */
 .sr-copy :is(h1, h2):focus {
   position: fixed;
   left: 50%;
@@ -534,30 +543,42 @@ a {
   transform: translateX(-50%);
   z-index: 40;
   margin: 0;
-  white-space: nowrap;
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.08em;
+  width: max-content;
+  max-width: min(560px, calc(100vw - 2 * var(--gutter) - 16px));
+  white-space: normal;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--ink);
   background: var(--paper-2);
-  padding: 12px 18px;
-  border: 2px solid var(--ink);
-  border-radius: 4px;
-  outline: none;
+  padding: 11px 18px 10px 14px;
+  border: 0;
+  border-left: 8px solid var(--signal);
+  border-radius: 0;
+  box-shadow:
+    0 0 0 3px var(--ink),
+    0 12px 28px rgba(0, 0, 0, 0.45);
+  outline: 3px solid var(--signal);
+  outline-offset: 3px;
 }
 .sr-copy [data-copy-status]:not(:empty) {
   position: fixed;
   left: 50%;
-  top: calc(var(--safe-top) + 64px);
+  top: calc(var(--safe-top) + 72px);
   transform: translateX(-50%);
   z-index: 40;
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.08em;
+  font: 700 12px/1 var(--font-mono);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink);
-  background: var(--signal);
-  padding: 10px 16px;
-  border: 2px solid var(--ink);
+  color: var(--paper);
+  background: var(--navy);
+  padding: 10px 16px 9px 12px;
+  border-left: 6px solid var(--signal);
+  box-shadow: 0 0 0 2px var(--signal);
 }
 .sr-note {
   position: absolute;
@@ -572,22 +593,25 @@ a {
   top: 10px;
   left: 50%;
   z-index: 120;
-  transform: translate(-50%, -160%);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  transform: translate(-50%, -180%);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--ink);
   background: var(--signal);
-  padding: 10px 16px;
-  border: 2px solid var(--ink);
-  border-radius: 4px;
+  padding: 10px 18px 9px 14px;
+  border-left: 8px solid var(--navy);
+  box-shadow: 0 0 0 3px var(--ink);
   transition: transform 0.2s ease;
 }
 .skip-link:focus {
   transform: translate(-50%, 0);
-  outline: none;
+  outline: 3px solid var(--signal);
+  outline-offset: 3px;
 }
 
 /* phones and scaled-down devices (html.lowfx, set by the engine): no

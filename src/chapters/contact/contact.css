@@ -1,0 +1,337 @@
+/* ------------------------------------------------------------------
+   Touchdown (contact) — the last segment of the broadcast.
+   Landscape: one column on the left (headline + a lower-third card with the
+   email, Copy email, the other concepts, Back to top, the footer); the end
+   zone and the board sit right of it. Portrait: the headline at the top, the
+   card at the bottom, the scene in the band between (the chapter measures
+   that band and frames the end zone into it).
+   ------------------------------------------------------------------ */
+
+/* a navy wash behind the copy (the scene stays bright where the copy isn't) */
+.stage-contact .ct-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(6, 10, 20, 0.84) 0%,
+    rgba(6, 10, 20, 0.7) 26%,
+    rgba(6, 10, 20, 0.32) 42%,
+    rgba(6, 10, 20, 0) 56%
+  );
+}
+
+.stage-contact .ct-copy {
+  position: absolute;
+  left: var(--gutter);
+  top: var(--safe-top);
+  bottom: var(--safe-bottom);
+  width: clamp(330px, 40vw, 560px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(12px, 2.2vh, 22px);
+  pointer-events: none;
+}
+
+.stage-contact .ct-head {
+  display: grid;
+  justify-items: start;
+  gap: clamp(8px, 1.6vh, 14px);
+}
+.stage-contact .ct-title {
+  font-size: clamp(3rem, min(6.6vw, 12vh), 7.4rem);
+  text-shadow: 0 4px 30px rgba(3, 6, 14, 0.55);
+}
+
+.stage-contact .ct-card {
+  display: grid;
+  gap: clamp(12px, 1.9vh, 18px);
+  padding: clamp(14px, 2.2vh, 20px) 22px clamp(14px, 2.2vh, 20px) 24px;
+}
+.stage-contact .ct-body {
+  max-width: 48ch;
+  font-size: clamp(14.5px, 1.1vw, 16.5px);
+  color: rgba(243, 244, 238, 0.9);
+}
+
+.stage-contact .ct-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  /* the slant overhangs the box: keep the parallelogram's left tip inside */
+  padding-left: 6px;
+}
+.stage-contact .ct-mail {
+  font-size: clamp(18px, 1.55vw, 23px);
+  padding: 13px 26px 12px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.stage-contact .ct-copybtn {
+  font-size: 16px;
+  padding: 11px 20px 10px;
+  white-space: nowrap;
+}
+
+.stage-contact .ct-net {
+  display: grid;
+  gap: 8px;
+}
+.stage-contact .ct-netlabel {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(243, 244, 238, 0.78);
+}
+.stage-contact .ct-netlabel::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.stage-contact .ct-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stage-contact .ct-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 9px 3px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--fg);
+  background: rgba(243, 244, 238, 0.05);
+  border: 1px solid var(--line-strong);
+  border-radius: 1px;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.stage-contact .ct-links a:hover {
+  border-color: var(--signal);
+  background: rgba(255, 210, 63, 0.1);
+}
+
+.stage-contact .ct-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding-top: clamp(10px, 1.6vh, 14px);
+  border-top: 1px solid var(--line);
+}
+.stage-contact .ct-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.stage-contact .ct-top::before {
+  content: '';
+  width: 12px;
+  height: 7px;
+  background: var(--signal);
+  transform: skewX(-18deg);
+}
+.stage-contact .ct-top:hover {
+  color: var(--signal);
+}
+.stage-contact .ct-legal {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  color: rgba(243, 244, 238, 0.76);
+}
+
+/* the sign-off: a FINAL tab and the line, over the scene (bottom right) */
+.stage-contact .ct-signoff {
+  position: absolute;
+  right: var(--gutter);
+  bottom: calc(var(--safe-bottom) + 10px);
+  display: flex;
+  align-items: stretch;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.4));
+}
+.stage-contact .ct-signoff-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px 6px 14px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--signal);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+.stage-contact .ct-signoff-text {
+  display: inline-flex;
+  align-items: center;
+  margin-left: -8px;
+  padding: 7px 20px 6px 20px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(19px, 1.7vw, 25px);
+  letter-spacing: 0.01em;
+  color: var(--fg);
+  background: rgba(8, 17, 38, 0.92);
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+/* short landscape screens: tighten the column */
+@media (orientation: landscape) and (max-height: 760px) {
+  .stage-contact .ct-title {
+    font-size: clamp(2.8rem, min(6vw, 11.5vh), 6rem);
+  }
+  .stage-contact .ct-body {
+    font-size: 14.5px;
+    line-height: 1.45;
+  }
+  .stage-contact .ct-mail {
+    font-size: 19px;
+    padding: 11px 22px 10px;
+  }
+  .stage-contact .ct-copybtn {
+    font-size: 15px;
+    padding: 9px 18px 8px;
+  }
+  .stage-contact .ct-links a {
+    min-height: 24px;
+    padding: 3px 8px 2px;
+  }
+}
+
+/* ---------------- portrait: headline top, card bottom ---------------- */
+@media (orientation: portrait) {
+  .stage-contact .ct-scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(6, 10, 20, 0.8) 0%,
+      rgba(6, 10, 20, 0.5) 20%,
+      rgba(6, 10, 20, 0) 34%,
+      rgba(6, 10, 20, 0) 50%,
+      rgba(6, 10, 20, 0.55) 66%,
+      rgba(6, 10, 20, 0.8) 100%
+    );
+  }
+  .stage-contact .ct-copy {
+    right: var(--gutter);
+    width: auto;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .stage-contact .ct-title {
+    font-size: clamp(2.8rem, 12.5vw, 6.6rem);
+  }
+  .stage-contact .ct-card {
+    max-width: 640px;
+  }
+  /* the sign-off shares the eyebrow's row, right-aligned */
+  .stage-contact .ct-signoff {
+    bottom: auto;
+    top: calc(var(--safe-top) - 5px);
+  }
+}
+
+/* phones */
+@media (orientation: portrait) and (max-width: 560px) {
+  .stage-contact .ct-head {
+    gap: 6px;
+  }
+  .stage-contact .ct-card {
+    gap: 10px;
+    padding: 13px 14px 12px 16px;
+    border-left-width: 4px;
+  }
+  .stage-contact .ct-body {
+    font-size: 14px;
+    line-height: 1.42;
+  }
+  .stage-contact .ct-ctas {
+    gap: 8px 10px;
+    padding-left: 4px;
+  }
+  .stage-contact .ct-mail {
+    font-size: 16px;
+    padding: 10px 16px 9px;
+    letter-spacing: 0.03em;
+  }
+  .stage-contact .ct-copybtn {
+    font-size: 14px;
+    padding: 9px 13px 8px;
+  }
+  .stage-contact .ct-net {
+    gap: 6px;
+  }
+  .stage-contact .ct-links {
+    gap: 5px;
+  }
+  .stage-contact .ct-links a {
+    min-height: 24px;
+    padding: 3px 7px 2px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+  .stage-contact .ct-foot {
+    padding-top: 9px;
+  }
+  .stage-contact .ct-legal {
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+  }
+  .stage-contact .ct-signoff-tag {
+    font-size: 11.5px;
+    padding: 5px 10px 4px 8px;
+  }
+  .stage-contact .ct-signoff-text {
+    font-size: 15px;
+    padding: 5px 10px 4px 13px;
+  }
+  .stage-contact .ct-signoff {
+    top: calc(var(--safe-top) - 5px);
+    filter: none;
+  }
+}
+
+/* short phones (375×667 and below): the tightest set */
+@media (orientation: portrait) and (max-width: 560px) and (max-height: 720px) {
+  .stage-contact .ct-title {
+    font-size: 2.6rem;
+  }
+  .stage-contact .ct-body {
+    font-size: 13.5px;
+    line-height: 1.38;
+  }
+  .stage-contact .ct-card {
+    gap: 9px;
+    padding: 11px 13px 10px 15px;
+  }
+}

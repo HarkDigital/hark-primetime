@@ -332,7 +332,8 @@ export class Puck {
   private ring: THREE.Mesh
   private disc: THREE.Mesh
   private pillar: THREE.Mesh
-  private tag: THREE.Sprite
+  /** the floating number tag (public so chapters can scale or dim it) */
+  tag: THREE.Sprite
   private ringMat: THREE.MeshBasicMaterial
   private discMat: THREE.MeshBasicMaterial
   private pillarMat: THREE.ShaderMaterial

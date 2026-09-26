@@ -1,0 +1,153 @@
+/* HERO — "Kickoff". Everything scoped to the hero's stage.
+   Landscape: copy LEFT (pregame lower third top-left, payoff bottom-left).
+   Portrait (height > 1.05 × width): pregame at the top, payoff at the bottom,
+   the stadium / the ball in the middle band. */
+
+/* ---- PREGAME: the network open's lower third ---- */
+.stage-hero .hero-intro {
+  position: absolute;
+  left: var(--gutter);
+  top: var(--safe-top);
+  width: min(452px, calc(100vw - 2 * var(--gutter)));
+  display: grid;
+  gap: 12px;
+  will-change: opacity, transform;
+}
+.stage-hero .hero-intro .hud-body {
+  max-width: none;
+  color: var(--fg);
+}
+.stage-hero .hero-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 0;
+  color: var(--fg);
+}
+.stage-hero .hero-hint::before {
+  content: '';
+  flex: none;
+  width: 28px;
+  height: 2px;
+  background: var(--signal);
+}
+
+/* ---- PAYOFF ---- */
+/* a broadcast graphics scrim: darkens the side the copy sits on */
+.stage-hero .hero-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(4, 8, 18, 0.8) 0%, rgba(4, 8, 18, 0.56) 28%, rgba(4, 8, 18, 0.18) 48%, rgba(4, 8, 18, 0) 62%),
+    linear-gradient(0deg, rgba(4, 8, 18, 0.55) 0%, rgba(4, 8, 18, 0) 38%);
+  will-change: opacity;
+}
+
+.stage-hero .hero-payoff {
+  position: absolute;
+  left: var(--gutter);
+  bottom: calc(var(--safe-bottom) + 6px);
+  width: min(720px, 54vw);
+  display: grid;
+  justify-items: start;
+  gap: 0;
+  will-change: opacity;
+}
+.stage-hero .hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  color: var(--fg);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+.stage-hero .hero-kicker::before {
+  content: '';
+  flex: none;
+  width: 16px;
+  height: 9px;
+  background: var(--signal);
+  transform: skewX(-18deg);
+}
+.stage-hero .hero-title {
+  font-size: clamp(3.3rem, min(8.6vw, 15vh), 9rem);
+  line-height: 0.84;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
+}
+.stage-hero .hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  margin-top: clamp(20px, 3.4vh, 32px);
+  padding-left: 6px;
+}
+
+/* ---- portrait ---- */
+@media (max-aspect-ratio: 20/21) {
+  .stage-hero .hero-intro {
+    right: var(--gutter);
+    width: auto;
+    padding: 14px 16px 16px 18px;
+    gap: 10px;
+  }
+  .stage-hero .hero-intro .hud-body {
+    font-size: 15px;
+  }
+  .stage-hero .hero-scrim {
+    background:
+      linear-gradient(0deg, rgba(4, 8, 18, 0.86) 0%, rgba(4, 8, 18, 0.62) 30%, rgba(4, 8, 18, 0) 56%),
+      linear-gradient(180deg, rgba(4, 8, 18, 0.35) 0%, rgba(4, 8, 18, 0) 22%);
+  }
+  .stage-hero .hero-payoff {
+    right: var(--gutter);
+    width: auto;
+    bottom: calc(var(--safe-bottom) + 2px);
+  }
+  .stage-hero .hero-title {
+    font-size: clamp(3.3rem, min(13.6vw, 8.4vh), 7.4rem);
+  }
+  .stage-hero .hero-kicker {
+    margin-bottom: 10px;
+  }
+}
+
+/* short landscape screens (phones on their side): tighter */
+@media (max-height: 520px) and (min-aspect-ratio: 20/21) {
+  .stage-hero .hero-intro {
+    width: min(340px, 42vw);
+    gap: 8px;
+    padding: 12px 16px 14px 18px;
+  }
+  .stage-hero .hero-intro .hud-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+  .stage-hero .hero-intro .hud-body {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .stage-hero .hero-title {
+    font-size: clamp(2.6rem, 14vh, 5rem);
+  }
+  .stage-hero .hero-kicker {
+    display: none;
+  }
+}
+
+/* short portrait phones (375×667): the ball needs the middle band */
+@media (max-aspect-ratio: 20/21) and (max-height: 720px) {
+  .stage-hero .hero-kicker {
+    display: none;
+  }
+  .stage-hero .hero-title {
+    font-size: clamp(2.6rem, 12vw, 4rem);
+  }
+  .stage-hero .hero-ctas {
+    margin-top: 16px;
+  }
+  .stage-hero .hero-intro .hud-body {
+    font-size: 14px;
+    line-height: 1.42;
+  }
+}
