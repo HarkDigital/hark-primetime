@@ -115,6 +115,8 @@ export class Engine {
   private suppressFocusLand = false
   private tmpRight = new THREE.Vector3()
   private tmpUp = new THREE.Vector3()
+  /** the pose actually shown: time-damped toward the chapter's pose (snaps on cuts/jumps) */
+  private shown = { position: new THREE.Vector3(), target: new THREE.Vector3(), fov: 45, init: false, index: -1 }
   /** ?cam=px,py,pz,tx,ty,tz[,fov] — a fixed debug camera for scouting shots */
   private debugCam: number[] | null = (() => {
     const v = new URLSearchParams(location.search).get('cam')
@@ -781,6 +783,28 @@ export class Engine {
     } catch (err) {
       if (!slot.failed) console.error(`[hark] chapter "${slot.def.id}" crashed in update`, err)
       slot.failed = true
+    }
+    // broadcast-smooth camera: damp the pose ~0.1 s so a fast scroll can't swing
+    // the floodlights across the frame several times a second; snap on a new
+    // chapter, a nav jump, or a big teleport (screenshots / goto)
+    {
+      const sh = this.shown
+      const far = sh.init && sh.position.distanceTo(this.pose.position) > 60
+      if (!sh.init || sh.index !== index || this.jump || far || this.reducedMotion) {
+        sh.position.copy(this.pose.position)
+        sh.target.copy(this.pose.target)
+        sh.fov = this.pose.fov
+        sh.init = true
+        sh.index = index
+      } else {
+        const k = 1 - Math.exp(-10 * f.dt)
+        sh.position.lerp(this.pose.position, k)
+        sh.target.lerp(this.pose.target, k)
+        sh.fov += (this.pose.fov - sh.fov) * k
+      }
+      this.pose.position.copy(sh.position)
+      this.pose.target.copy(sh.target)
+      this.pose.fov = sh.fov
     }
     if (this.debugCam) {
       const c = this.debugCam
